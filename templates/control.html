@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mouse + Keyboard Remote</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 20px;
+      background-color: #f9f9f9;
+    }
+    button {
+      padding: 15px;
+      margin: 5px;
+      font-size: 18px;
+      border-radius: 8px;
+      border: none;
+      background-color: #333;
+      color: white;
+      cursor: pointer;
+    }
+    .arrow-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      max-width: 320px;
+      margin: 20px auto;
+    }
+    .action-grid {
+      margin-top: 20px;
+    }
+    .keyboard {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 5px;
+      margin: 30px auto;
+      max-width: 600px;
+    }
+  </style>
+</head>
+<body>
+  <h2>🖱 Mouse + Keyboard Control</h2>
+
+  <!-- Mouse Control -->
+  <div class="arrow-grid">
+    <div></div>
+    <button onclick="sendAction('move_up')">🔼</button>
+    <div></div>
+
+    <button onclick="sendAction('move_left')">◀️</button>
+    <div></div>
+    <button onclick="sendAction('move_right')">▶️</button>
+
+    <div></div>
+    <button onclick="sendAction('move_down')">🔽</button>
+    <div></div>
+  </div>
+
+  <div class="action-grid">
+    <button onclick="sendAction('click_left')">🖱 Left Click</button>
+    <button onclick="sendAction('click_right')">🖱 Right Click</button>
+  </div>
+
+  <!-- Keyboard -->
+  <h3>⌨️ Virtual Keyboard</h3>
+  <div class="keyboard" id="keyboard">
+    <!-- Dynamically filled by JS -->
+  </div>
+
+  <script>
+    function sendAction(action) {
+      fetch('/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: action })
+      });
+    }
+
+    function sendKey(key) {
+      fetch('/keypress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: key })
+      });
+    }
+
+    // Basic QWERTY Layout
+    const keys = [
+      'q','w','e','r','t','y','u','i','o','p',
+      'a','s','d','f','g','h','j','k','l',
+      'z','x','c','v','b','n','m',
+      'space','enter','backspace'
+    ];
+
+    const keyboardDiv = document.getElementById('keyboard');
+    keys.forEach(k => {
+      const btn = document.createElement('button');
+      btn.innerText = k === 'space' ? '␣ Space' : k === 'enter' ? '⏎ Enter' : k === 'backspace' ? '⌫' : k;
+      btn.onclick = () => sendKey(k);
+      keyboardDiv.appendChild(btn);
+    });
+  </script>
+</body>
+</html>
